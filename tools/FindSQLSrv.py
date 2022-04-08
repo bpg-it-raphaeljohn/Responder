@@ -16,12 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from socket import *
 
-print('MSSQL Server Finder 0.3')
+print("MSSQL Server Finder 0.3")
 
-s = socket(AF_INET,SOCK_DGRAM)
+s = socket(AF_INET, SOCK_DGRAM)
 s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 s.settimeout(5)
-s.sendto(b'\x02',('255.255.255.255',1434))
+s.sendto(b"\x02", ("255.255.255.255", 1434))
 
 try:
     while 1:
@@ -30,8 +30,8 @@ try:
             break
         else:
             print("===============================================================")
-            print(("Host details: %s"%(address[0])))
-            print((data[2:]).decode('latin-1'))
+            print(("Host details: %s" % (address[0])))
+            print((data[2:]).decode("latin-1"))
             print("===============================================================")
             print("")
 except:

@@ -18,7 +18,7 @@ import sys
 import os
 import _thread
 
-BASEDIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+BASEDIR = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, BASEDIR)
 
 from servers.Browser import WorkstationFingerPrint, RequestType, RAPThisDomain, RapFinger
@@ -26,40 +26,41 @@ from socketserver import UDPServer, ThreadingMixIn, BaseRequestHandler
 from threading import Lock
 from utils import *
 
+
 def ParseRoles(data):
     if len(data) != 4:
-        return ''
+        return ""
 
     AllRoles = {
-            'Workstation':           (ord(data[0]) >> 0) & 1,
-            'Server':                (ord(data[0]) >> 1) & 1,
-            'SQL':                   (ord(data[0]) >> 2) & 1,
-            'Domain Controller':     (ord(data[0]) >> 3) & 1,
-            'Backup Controller':     (ord(data[0]) >> 4) & 1,
-            'Time Source':           (ord(data[0]) >> 5) & 1,
-            'Apple':                 (ord(data[0]) >> 6) & 1,
-            'Novell':                (ord(data[0]) >> 7) & 1,
-            'Member':                (ord(data[1]) >> 0) & 1,
-            'Print':                 (ord(data[1]) >> 1) & 1,
-            'Dialin':                (ord(data[1]) >> 2) & 1,
-            'Xenix':                 (ord(data[1]) >> 3) & 1,
-            'NT Workstation':        (ord(data[1]) >> 4) & 1,
-            'WfW':                   (ord(data[1]) >> 5) & 1,
-            'Unused':                (ord(data[1]) >> 6) & 1,
-            'NT Server':             (ord(data[1]) >> 7) & 1,
-            'Potential Browser':     (ord(data[2]) >> 0) & 1,
-            'Backup Browser':        (ord(data[2]) >> 1) & 1,
-            'Master Browser':        (ord(data[2]) >> 2) & 1,
-            'Domain Master Browser': (ord(data[2]) >> 3) & 1,
-            'OSF':                   (ord(data[2]) >> 4) & 1,
-            'VMS':                   (ord(data[2]) >> 5) & 1,
-            'Windows 95+':           (ord(data[2]) >> 6) & 1,
-            'DFS':                   (ord(data[2]) >> 7) & 1,
-            'Local':                 (ord(data[3]) >> 6) & 1,
-            'Domain Enum':           (ord(data[3]) >> 7) & 1,
+        "Workstation": (ord(data[0]) >> 0) & 1,
+        "Server": (ord(data[0]) >> 1) & 1,
+        "SQL": (ord(data[0]) >> 2) & 1,
+        "Domain Controller": (ord(data[0]) >> 3) & 1,
+        "Backup Controller": (ord(data[0]) >> 4) & 1,
+        "Time Source": (ord(data[0]) >> 5) & 1,
+        "Apple": (ord(data[0]) >> 6) & 1,
+        "Novell": (ord(data[0]) >> 7) & 1,
+        "Member": (ord(data[1]) >> 0) & 1,
+        "Print": (ord(data[1]) >> 1) & 1,
+        "Dialin": (ord(data[1]) >> 2) & 1,
+        "Xenix": (ord(data[1]) >> 3) & 1,
+        "NT Workstation": (ord(data[1]) >> 4) & 1,
+        "WfW": (ord(data[1]) >> 5) & 1,
+        "Unused": (ord(data[1]) >> 6) & 1,
+        "NT Server": (ord(data[1]) >> 7) & 1,
+        "Potential Browser": (ord(data[2]) >> 0) & 1,
+        "Backup Browser": (ord(data[2]) >> 1) & 1,
+        "Master Browser": (ord(data[2]) >> 2) & 1,
+        "Domain Master Browser": (ord(data[2]) >> 3) & 1,
+        "OSF": (ord(data[2]) >> 4) & 1,
+        "VMS": (ord(data[2]) >> 5) & 1,
+        "Windows 95+": (ord(data[2]) >> 6) & 1,
+        "DFS": (ord(data[2]) >> 7) & 1,
+        "Local": (ord(data[3]) >> 6) & 1,
+        "Domain Enum": (ord(data[3]) >> 7) & 1,
     }
 
-    return ', '.join(k for k,v in list(AllRoles.items()) if v == 1)
+    return ", ".join(k for k, v in list(AllRoles.items()) if v == 1)
 
 
 class BrowserListener(BaseRequestHandler):
@@ -69,16 +70,16 @@ class BrowserListener(BaseRequestHandler):
         lock = Lock()
         lock.acquire()
 
-        DataOffset    = struct.unpack('<H',data[139:141])[0]
-        BrowserPacket = data[82+DataOffset:]
-        ReqType       = RequestType(BrowserPacket[0])
+        DataOffset = struct.unpack("<H", data[139:141])[0]
+        BrowserPacket = data[82 + DataOffset :]
+        ReqType = RequestType(BrowserPacket[0])
 
         Domain = Decode_Name(data[49:81])
-        Name   = Decode_Name(data[15:47])
-        Role1  = NBT_NS_Role(data[45:48])
-        Role2  = NBT_NS_Role(data[79:82])
+        Name = Decode_Name(data[15:47])
+        Role1 = NBT_NS_Role(data[45:48])
+        Role2 = NBT_NS_Role(data[79:82])
         Fprint = WorkstationFingerPrint(data[190:192])
-        Roles  = ParseRoles(data[192:196])
+        Roles = ParseRoles(data[192:196])
 
         print(text("[BROWSER] Request Type : %s" % ReqType))
         print(text("[BROWSER] Address      : %s" % self.client_address[0]))
@@ -99,17 +100,19 @@ class ThreadingUDPServer(ThreadingMixIn, UDPServer):
         self.allow_reuse_address = 1
         UDPServer.server_bind(self)
 
+
 def serve_thread_udp_broadcast(host, port, handler):
     try:
-        server = ThreadingUDPServer(('', port), handler)
+        server = ThreadingUDPServer(("", port), handler)
         server.serve_forever()
     except:
         print("Error starting UDP server on port " + str(port) + ", check permissions or other servers running.")
 
+
 if __name__ == "__main__":
     try:
         print("Listening for BROWSER datagrams...")
-        _thread.start_new(serve_thread_udp_broadcast,('', 138,  BrowserListener))
+        _thread.start_new(serve_thread_udp_broadcast, ("", 138, BrowserListener))
 
         while True:
             time.sleep(1)

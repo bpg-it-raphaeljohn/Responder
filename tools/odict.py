@@ -1,15 +1,16 @@
 import sys
+
 try:
     from UserDict import DictMixin
 except ImportError:
     from collections import UserDict
     from collections import MutableMapping as DictMixin
 
-class OrderedDict(dict, DictMixin):
 
+class OrderedDict(dict, DictMixin):
     def __init__(self, *args, **kwds):
         if len(args) > 1:
-            raise TypeError('expected at most 1 arguments, got %d' % len(args))
+            raise TypeError("expected at most 1 arguments, got %d" % len(args))
         try:
             self.__end
         except AttributeError:
@@ -51,7 +52,7 @@ class OrderedDict(dict, DictMixin):
 
     def popitem(self, last=True):
         if not self:
-            raise KeyError('dictionary is empty')
+            raise KeyError("dictionary is empty")
         if last:
             key = next(reversed(self))
         else:
@@ -93,8 +94,8 @@ class OrderedDict(dict, DictMixin):
 
     def __repr__(self):
         if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, list(self.items()))
+            return "%s()" % (self.__class__.__name__,)
+        return "%s(%r)" % (self.__class__.__name__, list(self.items()))
 
     def copy(self):
         return self.__class__(self)
@@ -108,14 +109,13 @@ class OrderedDict(dict, DictMixin):
 
     def __eq__(self, other):
         if isinstance(other, OrderedDict):
-            return len(self)==len(other) and \
-                   min(p==q for p, q in  zip(list(self.items()), list(other.items())))
+            return len(self) == len(other) and min(p == q for p, q in zip(list(self.items()), list(other.items())))
         return dict.__eq__(self, other)
 
     def __ne__(self, other):
         return not self == other
 
 
-if __name__ == '__main__':
-    d = OrderedDict([('foo',2),('bar',3),('baz',4),('zot',5),('arrgh',6)])
-    assert [x for x in d] == ['foo', 'bar', 'baz', 'zot', 'arrgh']
+if __name__ == "__main__":
+    d = OrderedDict([("foo", 2), ("bar", 3), ("baz", 4), ("zot", 5), ("arrgh", 6)])
+    assert [x for x in d] == ["foo", "bar", "baz", "zot", "arrgh"]
